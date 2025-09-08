@@ -11,9 +11,7 @@ async function main() {
   const wallet = new ethers.Wallet(privateKey, ethers.provider);
   let vault = Vault__factory.connect((await get("USDCVaultOnBase")).address);
   await setRole(await vault.getAddress(), wallet.address, ROLES.ADD_STRATEGY_MANAGER, wallet);
-  await addStrategy(await vault.getAddress(), addresses.base.usdcV2OnBase.offChainStrategy, wallet);
   await setRole(await vault.getAddress(), wallet.address, ROLES.DEBT_MANAGER, wallet);
-  await setRole(await vault.getAddress(), wallet.address, ROLES.MAX_DEBT_MANAGER, wallet);
-  await setMaxDebt(await vault.getAddress(), addresses.base.usdcV2OnBase.offChainStrategy, parseUnits("10", 6), wallet);
+  await setDebt(await vault.getAddress(), addresses.base.usdcV2OnBase.offChainStrategy, parseUnits("10", 6), wallet);
 }
 main();

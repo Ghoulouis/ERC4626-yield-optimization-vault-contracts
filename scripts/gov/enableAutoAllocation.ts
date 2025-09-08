@@ -2,7 +2,6 @@ import { parseUnits } from "ethers";
 import hre from "hardhat";
 import { Vault__factory } from "../../typechain-types";
 import { addStrategy, ROLES, setDebt, setMaxDebt, setRole } from "../utils/helper";
-import { addresses } from "../../utils/address";
 
 async function main() {
   const { deployments, ethers } = hre;
@@ -11,6 +10,6 @@ async function main() {
   const wallet = new ethers.Wallet(privateKey, ethers.provider);
   let vault = Vault__factory.connect((await get("USDCVaultOnBase")).address);
   await setRole(await vault.getAddress(), wallet.address, ROLES.DEBT_MANAGER, wallet);
-  await vault.connect(wallet).setAutoAllocate(true);
+  await vault.connect(wallet).setAutoAllocate(false);
 }
 main();
