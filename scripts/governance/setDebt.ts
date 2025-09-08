@@ -13,8 +13,7 @@ async function main() {
   await setRole(await vault.getAddress(), wallet.address, ROLES.ADD_STRATEGY_MANAGER, wallet);
   await addStrategy(await vault.getAddress(), addresses.base.offChainStrategy, wallet);
   await setRole(await vault.getAddress(), wallet.address, ROLES.DEBT_MANAGER, wallet);
-  await setRole(await vault.getAddress(), wallet.address, ROLES.MAX_DEBT_MANAGER, wallet);
   console.log(" set max debt ...");
-  await setMaxDebt(await vault.getAddress(), addresses.base.offChainStrategy, parseUnits("100", 6), wallet);
+  await setDebt(await vault.getAddress(), addresses.base.offChainStrategy, parseUnits("1", 6), wallet);
 }
 main();
