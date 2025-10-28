@@ -171,7 +171,7 @@ contract Vault is
     function maxMint(
         address user
     ) public view override(ERC4626Upgradeable, IERC4626) returns (uint256) {
-        return ERC4626Logic.maxDeposit(vaultData, user);
+        return ERC4626Logic.maxMint(vaultData, user);
     }
 
     function maxWithdraw(
@@ -263,7 +263,12 @@ contract Vault is
         uint256 shares,
         address receiver,
         address owner
-    ) public override(ERC4626Upgradeable, IERC4626) returns (uint256) {
+    )
+        public
+        override(ERC4626Upgradeable, IERC4626)
+        nonReentrant
+        returns (uint256)
+    {
         ManagementFeeLogic.caculateManagementFee(vaultData);
         uint256 assets = ERC4626Logic.convertToAssets(
             vaultData,
@@ -287,24 +292,58 @@ contract Vault is
         uint256 assets,
         address receiver,
         address owner
-    ) public override(ERC4626Upgradeable, IVault) returns (uint256) {
+    )
+        public
+        override(ERC4626Upgradeable, IVault)
+        nonReentrant
+        returns (uint256)
+    {
         ManagementFeeLogic.caculateManagementFee(vaultData);
         uint256 shares = ERC4626Logic.convertToShares(
             vaultData,
             assets,
             Math.Rounding.Ceil
         );
-        return
-            WithdrawLogic.executeRedeem(
-                vaultData,
-                _msgSender(),
-                receiver,
-                owner,
-                assets,
-                shares,
-                0,
-                new address[](0)
-            );
+
+        WithdrawLogic.executeRedeem(
+            vaultData,
+            _msgSender(),
+            receiver,
+            owner,
+            assets,
+            shares,
+            0,
+            new address[](0)
+        );
+
+        return shares;
+    }
+
+    function withdrawWithMaxLoss(
+        uint256 assets,
+        address receiver,
+        address owner,
+        uint256 maxLoss
+    ) external nonReentrant returns (uint256) {
+        ManagementFeeLogic.caculateManagementFee(vaultData);
+        uint256 shares = ERC4626Logic.convertToShares(
+            vaultData,
+            assets,
+            Math.Rounding.Ceil
+        );
+
+        WithdrawLogic.executeRedeem(
+            vaultData,
+            _msgSender(),
+            receiver,
+            owner,
+            assets,
+            shares,
+            maxLoss,
+            new address[](0)
+        );
+
+        return shares;
     }
 
     function convertToAssets(
@@ -491,10 +530,19 @@ contract Vault is
         );
     }
 
+    function shutdownVault()
+        external
+        onlyRole(Constants.ROLE_EMERGENCY_MANAGER)
+    {
+        ConfiguratorLogic.ShutdownVault(vaultData);
+        _grantRole(Constants.ROLE_DEBT_MANAGER, address(0));
+    }
+
     // VIEW FUNCTIONS
     function getDefaultQueue() external view returns (address[] memory) {
         return vaultData.defaultQueue;
     }
+
     function strategies(
         address strategy
     ) public view returns (DataTypes.StrategyData memory) {
@@ -504,6 +552,7 @@ contract Vault is
     function pricePerShare() public view returns (uint256) {
         return ERC4626Logic.pricePerShare(vaultData);
     }
+
     function pricePerShareWithFee() public view returns (uint256) {
         return ERC4626Logic.pricePerShareWithFee(vaultData);
     }
@@ -518,5 +567,9 @@ contract Vault is
 
     function minimumTotalIdle() public view returns (uint256) {
         return vaultData.minimumTotalIdle;
+    }
+
+    function isShutdown() public view returns (bool) {
+        return vaultData.isShutdown;
     }
 }

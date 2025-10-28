@@ -17,7 +17,7 @@ const TEST_HDWALLET = {
   passphrase: "",
 };
 
-const accounts = [process.env.DEPLOYER!, process.env.TEST_AGENT!];
+const accounts = [process.env.DEPLOYER!, process.env.AGENT_BASE_USDC!];
 
 const { INFURA_KEY } = process.env;
 

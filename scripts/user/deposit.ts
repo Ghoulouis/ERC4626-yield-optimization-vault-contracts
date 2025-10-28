@@ -8,19 +8,11 @@ async function main() {
   const { get } = deployments;
   const privateKey = process.env.USER_PRIVATE_KEY!;
   const wallet = new ethers.Wallet(privateKey, ethers.provider);
-  let vault = Vault__factory.connect((await get("TestVault")).address, ethers.provider);
+  let vault = Vault__factory.connect((await get("USDCVaultOnBase")).address, ethers.provider);
   let maxDeposit = await vault.maxDeposit(wallet.address);
-  let reviewWithdraw = await vault["maxWithdraw(address)"](wallet.address);
-  let totalSupply = await vault.totalSupply();
-  let totalSupplyWithFee = await vault.totalSupplyWithFee();
-  let totalAsset = await vault.totalAssets();
 
   console.log(` max Deposit = ${maxDeposit}`);
-  console.log(` max Withdraw = ${reviewWithdraw}`);
-  console.log(` total Supply = ${totalSupply}`);
-  console.log(` total Supply With Fee = ${totalSupplyWithFee}`);
-  console.log(` total Asset = ${totalAsset}`);
 
-  await deposit(await vault.getAddress(), ethers.parseUnits("20", 6), wallet);
+  await deposit(await vault.getAddress(), ethers.parseUnits("1", 6), wallet);
 }
 main();

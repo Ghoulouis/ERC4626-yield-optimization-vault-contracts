@@ -93,6 +93,6 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     },
   });
 };
-deploy.tags = ["vault"];
+deploy.tags = ["vault", "test"];
 
 export default deploy;

@@ -11,10 +11,9 @@ library UnlockSharesLogic {
         DataTypes.VaultData storage vault
     ) external view returns (uint256) {
         if (vault.fullProfitUnlockDate > block.timestamp) {
-            return
-                (vault.profitUnlockingRate *
-                    (block.timestamp - vault.lastProfitUpdate)) /
-                Constants.MAX_BPS_EXTENDED;
+            return ((vault.profitUnlockingRate *
+                (block.timestamp - vault.lastProfitUpdate)) /
+                Constants.MAX_BPS_EXTENDED);
         } else {
             if (vault.fullProfitUnlockDate != 0) {
                 return vault.balanceOf(vault.addressVault);

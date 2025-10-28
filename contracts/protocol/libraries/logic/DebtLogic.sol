@@ -27,7 +27,6 @@ library DebtLogic {
         DataTypes.VaultData storage vault,
         address strategy
     ) external returns (uint256 gain, uint256 loss) {
-        require(strategy != address(this), "Invalid strategy");
         require(
             vault.strategies[strategy].activation != 0,
             "Inactive strategy"
@@ -209,6 +208,10 @@ library DebtLogic {
             "Inactive strategy"
         );
 
+        if (vault.isShutdown) {
+            targetDebt = 0;
+        }
+
         uint256 currentDebt = vault.strategies[strategy].currentDebt;
         require(targetDebt != currentDebt, "No debt change");
 
@@ -283,12 +286,11 @@ library DebtLogic {
 
             if (assetsToDeposit > 0) {
                 address _asset = vault.asset();
-                IERC20(_asset).approve(strategy, assetsToDeposit);
+                IERC20(_asset).safeIncreaseAllowance(strategy, assetsToDeposit);
                 uint256 preBalance = IERC20(_asset).balanceOf(address(this));
-
                 IStrategy(strategy).deposit(assetsToDeposit, address(this));
                 uint256 postBalance = IERC20(_asset).balanceOf(address(this));
-                IERC20(_asset).approve(strategy, 0);
+                IERC20(_asset).forceApprove(strategy, 0);
                 assetsToDeposit = preBalance - postBalance;
                 vault.totalIdle -= assetsToDeposit;
                 vault.totalDebt += assetsToDeposit;
