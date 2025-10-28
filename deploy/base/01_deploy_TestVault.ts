@@ -5,24 +5,24 @@ import { addresses } from "../../utils/address";
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts, getChainId } = hre;
   const { deploy, get } = deployments;
-  const { deployer, agent } = await getNamedAccounts();
+  const { testDeployer, testAgent } = await getNamedAccounts();
 
   let usdc = addresses.base.usdc;
   let timeUnlock = 7 * 24 * 60 * 60;
   let ERC20LogicDeployment = await deploy("ERC20Logic", {
-    from: deployer,
+    from: testDeployer,
     log: true,
   });
 
   let ERC4626LogicDeployment = await deploy("ERC4626Logic", {
-    from: deployer,
+    from: testDeployer,
     log: true,
     libraries: {
       ERC20Logic: ERC20LogicDeployment.address,
     },
   });
   let WithdrawLogicDeployment = await deploy("WithdrawLogic", {
-    from: deployer,
+    from: testDeployer,
     log: true,
     libraries: {
       ERC20Logic: ERC20LogicDeployment.address,
@@ -31,24 +31,24 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
 
   let UnlockSharesLogicDeployment = await deploy("UnlockSharesLogic", {
-    from: deployer,
+    from: testDeployer,
     log: true,
     libraries: {
       ERC20Logic: ERC20LogicDeployment.address,
     },
   });
   let InitializeLogicDeployment = await deploy("InitializeLogic", {
-    from: deployer,
+    from: testDeployer,
     log: true,
   });
 
   let ConfiguratorLogicDeployment = await deploy("ConfiguratorLogic", {
-    from: deployer,
+    from: testDeployer,
     log: true,
   });
 
   let DebtLogicDeployment = await deploy("DebtLogic", {
-    from: deployer,
+    from: testDeployer,
     log: true,
     libraries: {
       ERC20Logic: ERC20LogicDeployment.address,
@@ -58,7 +58,7 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
 
   let DepositLogicDeployment = await deploy("DepositLogic", {
-    from: deployer,
+    from: testDeployer,
     log: true,
     libraries: {
       ERC20Logic: ERC20LogicDeployment.address,
@@ -69,13 +69,13 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   await deploy("TestVault", {
     contract: "Vault",
-    from: deployer,
+    from: testDeployer,
     proxy: {
-      owner: deployer,
+      owner: testDeployer,
       execute: {
         init: {
           methodName: "initialize",
-          args: [usdc, "Test Vault", "testUSDC", timeUnlock, deployer],
+          args: [usdc, "Test Vault", "testUSDC", timeUnlock, testDeployer],
         },
       },
     },

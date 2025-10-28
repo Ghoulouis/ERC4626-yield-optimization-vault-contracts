@@ -17,8 +17,12 @@ const TEST_HDWALLET = {
   passphrase: "",
 };
 
-const accounts = [process.env.DEPLOYER!, process.env.AGENT_BASE_USDC!];
-
+const accounts = [
+  process.env.DEPLOYER!,
+  process.env.AGENT_BASE_USDC!,
+  process.env.TEST_DEPLOYER!,
+  process.env.TEST_AGENT!,
+];
 const { INFURA_KEY } = process.env;
 
 const config: HardhatUserConfig = {
@@ -63,8 +67,14 @@ const config: HardhatUserConfig = {
     agent: {
       default: 1,
     },
-    beneficiary: {
+    testDeployer: {
       default: 2,
+    },
+    testAgent: {
+      default: 3,
+    },
+    beneficiary: {
+      default: 4,
     },
   },
 };
