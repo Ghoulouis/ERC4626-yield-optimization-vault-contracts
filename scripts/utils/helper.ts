@@ -28,7 +28,7 @@ export async function deposit(address: string, amount: bigint, signer: ethers.Si
   const asset = ERC20__factory.connect(assetAddress, signer);
   let balance = await asset.balanceOf(signer.getAddress());
   if (balance < amount) {
-    throw new Error("Insufficient balance");
+    throw new Error("Insufficient balance " + balance + " " + amount);
   }
   let preBefore = await vault.convertToAssets(await vault.balanceOf(signer.getAddress()));
   console.log("Balance in vault before: ", preBefore);

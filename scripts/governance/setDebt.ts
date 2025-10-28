@@ -36,6 +36,6 @@ async function main() {
   });
 
   console.table(data);
-  //await setDebt(await vault.getAddress(), addresses.base.offChainStrategy, parseUnits("4", 6), wallet);
+  await setDebt(await vault.getAddress(), addresses.base.offChainStrategy, parseUnits("24", 6), wallet);
 }
 main();
